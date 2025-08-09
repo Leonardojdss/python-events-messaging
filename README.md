@@ -1,1 +1,1 @@
-# Projetos para implentação do aws sns e sqs
+# Projeto para implentação do aws sns e sqs
