@@ -1,0 +1,56 @@
+# Utilize this template to deploy (created by leonardojdss))
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: python-events-messaging-sns-sqs-lambda-aurora-rds
+
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+
+  NewClientFunctionSQS:
+    Type: AWS::SQS::Queue
+    Properties: 
+      QueueName: "NewClientFunctionSQS"
+
+  Subscription:
+    Type: 'AWS::SNS::Subscription'
+    Properties:
+      TopicArn: <topic-name>
+      Endpoint: !GetAtt NewClientFunctionSQS.Arn
+      Protocol: sqs
+      RawMessageDelivery: true
+
+  NewClientFunctionSQSPolicy:
+    Type: "AWS::SQS::QueuePolicy"
+    Properties:
+      Queues: 
+        - !Ref NewClientFunctionSQS
+      PolicyDocument:
+        Statement:
+          - Effect: "Allow"
+            Principal: "*"
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt NewClientFunctionSQS.Arn
+            Condition:
+              ArnEquals:
+                "aws:SourceArn": <topic-name>
+
+  RegisterNewClientFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: RegisterNewClientFunction
+      #CodeUri: ms_management_client/src/
+      Handler: app.register_new_client
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        SqsEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt NewClientFunctionSQS.Arn
