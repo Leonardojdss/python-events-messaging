@@ -9,7 +9,6 @@ load_dotenv()
 
 class PostgreSQL:
     def __init__(self):
-        # Variáveis de ambiente para PostgreSQL
         self.host = os.getenv("DB_HOST")
         self.port = os.getenv("DB_PORT")
         self.database = os.getenv("DB_NAME")
@@ -19,7 +18,6 @@ class PostgreSQL:
         if not all([self.database, self.username, self.password]):
             raise ValueError("Variáveis de ambiente DB_NAME, DB_USER e DB_PASSWORD devem estar definidas no .env")
         
-        # String de conexão PostgreSQL
         connection_string = f"postgresql://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}"
         self.engine: Engine = create_engine(connection_string, echo=False, future=True)
         self.conn: Connection | None = None

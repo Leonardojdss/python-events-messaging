@@ -21,7 +21,7 @@ def register_new_client(event, context):
             session.add(obj)
         session.commit()
     except Exception as e:
-        print(f"Erro ao registrar novo cliente: {e}")
+        print(f"Erro ao registrar : {e}")
     finally:
         session.close()
-    return f"Cliente {body['name_costumer']} registrados com sucesso"
+    return f"{body['name_costumer']} registrados com sucesso"
